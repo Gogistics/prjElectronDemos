@@ -29,10 +29,14 @@
             url: '/front',
 			templateUrl: 'file://' + __dirname + '/my_ng_templates/my_ng_front.html'
 		});
-		$urlRouterProvider.otherwise('/front');
+		$urlRouterProvider.otherwise('/index');
     });
 
     window.index_page_app.run(function($rootScope, APP_VALUES) {
         // pre-run
+        // EX: ajax call with jquery
+        $.get( "http://chains.gogistics-tw.com/data/pages_info.json", function( data ) {
+            console.log( data );
+        });
     });
 })(jQuery);
