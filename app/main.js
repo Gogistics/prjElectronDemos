@@ -25,7 +25,9 @@ function init_app(){
         };
         
         main_window = new browser_window(window_options);
-        main_window.loadURL(path.join('', __dirname, '/templates/index.html'));
+        main_window.loadURL('file://' + __dirname + '/templates/index.html');
+        // alternative:
+        // mainWindow.loadURL(path.join('file://', __dirname, '/templates/index.html'));
         
         // launch full-screen with deve-tools if there are any bugs
         if(debug){
