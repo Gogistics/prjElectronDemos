@@ -7,6 +7,7 @@ const   path = require('path'),
         auto_updater = require('./auto_updater'),
         debug = /--debug/.test(process.argv[2]);
         
+// set window
 var main_window = null;
 
 // pre-definie app name
