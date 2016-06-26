@@ -1,0 +1,21 @@
+<html>
+    <head>
+        <meta charset="utf-8">        
+        <!-- Bootstrap Core CSS -->
+        <link type="text/css" rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+        <link type="text/css" rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap-theme.min.css">
+        <title>First App</title>
+    </head>
+    <body>
+        <div ng-app="indexPageApp" ui-view></div>
+        <script type="text/javascript">
+            window.$ = window.jQuery = require('../node_modules/jquery/dist/jquery.min.js');
+            require('../node_modules/bootstrap/dist/js/bootstrap.min.js');
+            require('../plugin_ng/angular.js');
+            require('../plugin_ng/angular-route.js');
+            require('../plugin_ng/angular-ui-router.js');
+            require('../plugin_ng/angular-animate.js');
+            require('../index.js');
+        </script>
+    </body>
+</html>
