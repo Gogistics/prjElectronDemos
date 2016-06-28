@@ -8,8 +8,9 @@ const   path = require('path'),
         debug = /--debug/.test(process.argv[2]);
         
 // set window
-var main_window = null;
-
+var main_window = null,
+    inserted_window = null;
+    
 // pre-definie app name
 if (process.mas) app.setName('Electron Demo');
 
@@ -23,7 +24,6 @@ function init_app(){
             height: 840,
             title: app.getName()
         };
-        
         main_window = new browser_window(window_options);
         main_window.loadURL('file://' + __dirname + '/templates/index.html');
         // alternative:
@@ -34,7 +34,9 @@ function init_app(){
             main_window.webContents.openDevTools();
             main_window.maximize();
         }
-        
+        main_window.webContents.on('did-finish-load', function(){
+            main_window.webContents.send('ping', 'message from main.js');
+        });
         main_window.on('closed', function(){
             main_window = null;
         });

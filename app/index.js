@@ -1,9 +1,13 @@
 /* angularjs */
 (function($){
-    // init ng
+    // init ng (alternative)
     // angular.element(document.body).ready(function() {
         // angular.bootstrap(document.body, ['indexPageApp']);
     // });
+    const ipc_renderer = require('electron').ipcRenderer;
+    ipc_renderer.on('ping', (event, message) => {
+        console.log(message);
+    });
 
     // set modules & interpolation
     window.index_page_app = window.index_page_app || angular.module('indexPageApp', ['ui.router', 'ngAnimate'], function($interpolateProvider) {
@@ -39,4 +43,24 @@
             console.log( data );
         });
     });
+    
+    // custom directives
+    window.index_page_app.directive('toggleInsertView', function() {
+        return function(scope, el) {
+            el.bind('click', function(e) {
+                e.preventDefault();
+                alert('Add new password');
+            });
+        };
+    });
+    
+    // controllers
+    // controllers are used for building the connection between jinja templates and ng templates
+    var indexController = function ($state, $scope, $stateParams, $rootScope, APP_VALUES) {
+        // set ctrl
+        var ctrl = this;
+	}
+	indexController.$injector = ['$state', '$scope', '$stateParams', '$rootScope', 'APP_VALUES'];
+	window.index_page_app.controller('indexCtrl', indexController);
+    
 })(jQuery);
