@@ -1,1 +1,7 @@
 app/node_modules/
+app/chains_app_test-darwin-x64/
+app/chains_app_test-linux-ia32/
+app/chains_app_test-linux-x64/
+app/chains_app_test-mas-x64/
+app/chains_app_test-win32-ia32/
+app/chains_app_test-win32-x64/
