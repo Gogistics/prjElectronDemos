@@ -12,7 +12,7 @@ var main_window = null,
     inserted_window = null;
     
 // pre-definie app name
-if (process.mas) app.setName('Electron Demo');
+if (process.mas) app.setName('Chains Wallet');
 
 // set init function
 function init_app(){
@@ -22,9 +22,17 @@ function init_app(){
             width: 1080,
             min_width: 680,
             height: 840,
-            title: app.getName()
+            min_height: 400,
+            title: app.getName(),
+            icon: __dirname + '/images/chains_icon_1.png',
+            // frame: false
         };
         main_window = new browser_window(window_options);
+        
+        // set overlay icon
+        // main_window.setOverlayIcon( __dirname + '/images/changes.png', "unsaved changes");
+        
+        // set load url
         main_window.loadURL('file://' + __dirname + '/templates/index.html');
         // alternative:
         // mainWindow.loadURL(path.join('file://', __dirname, '/templates/index.html'));
