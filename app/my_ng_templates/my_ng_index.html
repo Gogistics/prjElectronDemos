@@ -1,9 +1,10 @@
 <div class="container" ng-controller="indexCtrl as ctrl">
-    <h1 class="text-center">Hello Electron</h1>
-    <br>
     <ul class="nav nav-tabs">
         <li role="presentation" class="active"><a href="" data-target="#home" data-toggle="tab">Home</a></li>
         <li role="presentation"><a href="" data-target="#profile" data-toggle="tab">Profile</a></li>
+        <li role="presentation"><a href="" data-target="#my_wallet" data-toggle="tab">My Wallet</a></li>
+        <li role="presentation"><a href="" data-target="#keys_management" data-toggle="tab">Keys Management</a></li>
+        <li role="presentation"><a href="" data-target="#transactions" data-toggle="tab">Transactions</a></li>
     </ul>
     
     <div class="tab-content">
@@ -12,10 +13,28 @@
         <div class = "panel panel-success">
             <div class = "panel-heading">Home</div>
             <div class="panel-body">
-                <button toggle-insert-view class="btn btn-info">
-                    <i class="glyphicon glyphicon-plus-sign"></i>
+                <button generate-password class="btn btn-warning">
+                    <i class="glyphicon glyphicon-refresh"></i>
                 </button>
+                <button copy-pwd class="btn btn-warning">
+                    <i class="glyphicon glyphicon-copy"></i>
+                </button>
+                <hr>
+                <input type="text" class="form-control" ng-model="ctrl.pwd">
             </div>
+            <section user-info-directive togglechecked="ctrl.toggle_checked()" class="panel-body">
+                <p>
+                    <span>Account: [[person.account_name]]</span>
+                    <br>
+                    <span>Name: [[person.name]]</span>
+                </p>
+            </section>
+            <div class="panel-body">
+                <div id="tooltip" tooltip>User Friendly Tech Help
+                    <span id="tooltip-span">Tooltip!</span>
+                </div>
+            </div>
+            <div class = "panel-footer">&copy; Gogistics Ltd. Since 2014</div>
         </div>
         <hr>
       </div>
@@ -24,6 +43,36 @@
         <div class = "panel panel-success">
             <div class = "panel-heading">Profile</div>
             <div class="panel-body">Panel Content</div>
+        </div>
+        <hr>
+      </div>
+      <div class="tab-pane" id="my_wallet">
+        <br><br>
+        <div class = "panel panel-success">
+            <div class = "panel-heading">My Wallet</div>
+            <div class="panel-body">
+                <input auto-complete mydata="ctrl.addresses" class="form-control" placeholder="Search Addresses">
+            </div>
+        </div>
+        <hr>
+      </div>
+      <div class="tab-pane" id="keys_management">
+        <br><br>
+        <div class = "panel panel-success">
+            <div class = "panel-heading">Keys Management</div>
+            <div class="panel-body">
+                <input auto-complete mydata="ctrl.keys" class="form-control" placeholder="Search Key">
+            </div>
+        </div>
+        <hr>
+      </div>
+      <div class="tab-pane" id="transactions">
+        <br><br>
+        <div class = "panel panel-success">
+            <div class = "panel-heading">Transactions History</div>
+            <div class="panel-body">
+                <input auto-complete mydata="ctrl.transactions" class="form-control" placeholder="Search Transaction ID">
+            </div>
         </div>
         <hr>
       </div>

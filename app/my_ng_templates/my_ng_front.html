@@ -1,6 +1,4 @@
-<div class="container">
-    <h1 class="text-center">Front Page</h1>
-    <br>
+<div class="container" ng-controller="frontCtrl as ctrl">
     <ul class="nav nav-tabs">
         <li role="presentation" class="active"><a href="" data-target="#home" data-toggle="tab">Home</a></li>
         <li role="presentation"><a href="" data-target="#profile" data-toggle="tab">Profile</a></li>
@@ -19,7 +17,9 @@
         <br><br>
         <div class = "panel panel-success">
             <div class = "panel-heading">Profile</div>
-            <div class="panel-body">Panel Content</div>
+            <button toggle-insert-view class="btn btn-warning">
+                <i class="glyphicon glyphicon-record"></i>
+            </button>
         </div>
         <hr>
       </div>
