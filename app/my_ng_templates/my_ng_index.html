@@ -13,14 +13,7 @@
         <div class = "panel panel-success">
             <div class = "panel-heading">Home</div>
             <div class="panel-body">
-                <button generate-password class="btn btn-warning">
-                    <i class="glyphicon glyphicon-refresh"></i>
-                </button>
-                <button copy-pwd class="btn btn-warning">
-                    <i class="glyphicon glyphicon-copy"></i>
-                </button>
-                <hr>
-                <input type="text" class="form-control" ng-model="ctrl.pwd">
+                <h3>Welcome to Chains Desktop App</h3>
             </div>
             <section user-info-directive togglechecked="ctrl.toggle_checked()" class="panel-body">
                 <p>
@@ -41,8 +34,18 @@
       <div class="tab-pane" id="profile">
         <br><br>
         <div class = "panel panel-success">
-            <div class = "panel-heading">Profile</div>
-            <div class="panel-body">Panel Content</div>
+            <div class = "panel-heading">User Profile</div>
+            <div class="panel-body">
+                <p>Generate Simple Password</p>
+                <button generate-password class="btn btn-warning">
+                    <i class="glyphicon glyphicon-refresh"></i>
+                </button>
+                <button copy-pwd class="btn btn-warning">
+                    <i class="glyphicon glyphicon-copy"></i>
+                </button>
+                <hr>
+                <input type="text" class="form-control" ng-model="ctrl.pwd">
+            </div>
         </div>
         <hr>
       </div>
@@ -51,6 +54,7 @@
         <div class = "panel panel-success">
             <div class = "panel-heading">My Wallet</div>
             <div class="panel-body">
+                <p>My Addresses</p>
                 <input auto-complete mydata="ctrl.addresses" class="form-control" placeholder="Search Addresses">
             </div>
         </div>
@@ -65,6 +69,30 @@
             </div>
         </div>
         <hr>
+        <div class = "panel panel-success">
+            <div class = "panel-heading">Generate and Add New Keys Pair</div>
+            
+            <div class="panel-body">
+                <button generate-keys-pair class="btn btn-warning">
+                    <i class="glyphicon glyphicon-refresh"></i>
+                </button>
+                <button save-keys-pair class="btn btn-warning">
+                    <i class="glyphicon glyphicon-download-alt"></i>
+                </button>
+                <hr>
+            <h4>Public Key Base64</h4>
+            <textarea class="form-control textarea_animated" placeholder="Click button to generate keys">[[ctrl.new_kays_pair.pub_key_base64]]</textarea>
+            <br>
+            <h4>Private Key Base64</h4>
+            <textarea class="form-control textarea_animated" placeholder="Click button to generate keys">[[ctrl.new_kays_pair.pri_key_base64]]</textarea>
+            <br>
+            <h4>Public Key Hex</h4>
+            <textarea class="form-control textarea_animated" placeholder="Click button to generate keys">[[ctrl.new_kays_pair.pub_key_hex]]</textarea>
+            <br>
+            <h4>Private Key Hex</h4>
+            <textarea class="form-control textarea_animated" placeholder="Click button to generate keys">[[ctrl.new_kays_pair.pri_key_hex]]</textarea>
+            </div>
+        </div>
       </div>
       <div class="tab-pane" id="transactions">
         <br><br>
