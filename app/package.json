@@ -15,10 +15,16 @@
   "license": "ISC",
   "devDependencies": {
     "Q": "0.0.1",
+    "angular-mocks": "^1.5.6",
     "asar": "^0.11.0",
     "electron-packager": "^7.1.0",
     "electron-prebuilt": "^1.2.5",
     "fs-jetpack": "^0.9.1",
+    "jasmine-core": "^2.4.1",
+    "karma": "^0.13.22",
+    "karma-chrome-launcher": "^1.0.1",
+    "karma-jasmine": "^1.0.2",
+    "karma-spec-reporter": "0.0.26",
     "rcedit": "^0.5.0"
   },
   "dependencies": {
@@ -28,6 +34,7 @@
     "angular-ui-router": "^0.3.1",
     "bootstrap": "^3.3.6",
     "crypto-js": "^3.1.6",
+    "fingerprintjs2": "^1.4.0",
     "i": "^0.3.5",
     "jquery": "^1.11.3",
     "jquery-ui": "^1.10.5",
