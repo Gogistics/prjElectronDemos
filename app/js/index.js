@@ -69,7 +69,8 @@
     });
     window.chains_app.factory('CRYPTO_HANDLER', function($http){
         return { crypto: require('crypto-js'),
-                encryptByDES: function(message, key) {
+                _crypto: require('crypto'),
+                encrypt_by_DES: function(message, key) {
                     var keyHex = this.crypto.enc.Utf8.parse(key);
                     var encrypted = this.crypto.DES.encrypt(message, keyHex, {
                         mode: this.crypto.mode.ECB,
@@ -77,7 +78,7 @@
                     });
                     return encrypted.toString();
                 },
-                decryptByDES: function(ciphertext, key) {
+                decrypt_by_DES: function(ciphertext, key) {
                     var keyHex = this.crypto.enc.Utf8.parse(key);
                     var decrypted = this.crypto.DES.decrypt({
                         ciphertext: this.crypto.enc.Base64.parse(ciphertext)
@@ -86,6 +87,57 @@
                         padding: this.crypto.pad.Pkcs7
                     });
                     return decrypted.toString(this.crypto.enc.Utf8);
+                },
+                generate_rsa_keys_pair: function(){
+                    //
+                    var prime_length = 512;
+                    var diffHell = this._crypto.createDiffieHellman(prime_length);
+                    diffHell.generateKeys('base64');
+                    console.log("Public Key : " ,diffHell.getPublicKey('base64'));
+                    console.log("Private Key : " ,diffHell.getPrivateKey('base64'));
+
+                    console.log("Public Key : " ,diffHell.getPublicKey('hex'));
+                    console.log("Private Key : " ,diffHell.getPrivateKey('hex'));
+                    
+                    return {pub_key_base64: diffHell.getPublicKey('base64'),
+                            pri_key_base64: diffHell.getPrivateKey('base64'),
+                            pub_key_hex: diffHell.getPublicKey('hex'),
+                            pri_key_hex: diffHell.getPrivateKey('hex')};
+                },
+                encrypt_by_rsa: function(plaintext, privateKey){
+                    var signer = this._crypto.createSign("RSA-SHA256");
+                    signer.update(plaintext);  
+                    var sign = signer.sign(privateKey, "hex");  
+                  
+                    return sign;  
+                },
+                verify_by_rsa: function(plaintext, privateKey){
+                    var verifier = crypto.createVerify("RSA-SHA256");  
+                    verifier.update(plaintext);  
+                    var result = verifier.verify(publicKey, cipertext, "hex");  
+                    
+                    return result;
+                },
+                process_keys_exchange: function(){
+                    // Generate Alice's keys...
+                    var alice = this._crypto.createDiffieHellman(512),
+                        alice_key = alice.generateKeys();
+
+                    // Generate Bob's keys...
+                    var bob = this._crypto.createDiffieHellman(alice.getPrime(), alice.getGenerator()),
+                        bob_key = bob.generateKeys();
+
+                    // Exchange and generate the secret...
+                    var alice_secret = alice.computeSecret(bob_key),
+                        bob_secret = bob.computeSecret(alice_key);
+                        
+                    if(alice_secret.toString('hex') === bob_secret.toString('hex')){
+                        console.log('Match!');
+                        console.log('--- alice key ---');
+                        console.log(alice_secret.toString('hex'));
+                        console.log('--- bob key ---');
+                        console.log(bob_secret.toString('hex'));
+                    }
                 }};
     });
     window.chains_app.factory('CLIPBOARD', function(){
@@ -95,47 +147,46 @@
     // services
     window.chains_app.service('LOKI_STORAGE', ['$q', function($q){
         // set var
-        this.path = require('path');
-        this.loki_db = new require('lokijs')(this.path.resolve(__dirname, '../..', 'chains.db'));
-        this.collection = null;
-        this.loaded = false;
+        this.loki = require('lokijs');
+        this.loki_db = new this.loki('chains.db');
+        this.chains = this.loki_db.addCollection('chains');
+        this.loaded = true;
         
-        this.init = function(){
-            //
-            var d = $q.defer();
-            this.reload()
-                .then(function(){
-                    this.collection = this.loki_db.getCollection('key_chain');
-                    d.resolve(this);
-                }.bind(this))
-                .catch(function(e){
-                    this.loki_db.addCollection('key_chain');
-                    this.loki_db.saveDatabase();
-                    this.collection = this.loki_db.getCollection('key_chain');
-                    this.loaded = true;
-                    d.resolve(this);
-                }.bind(this));
+        // this.init = function(){
+            // var d = $q.defer();
+            // this.reload()
+                // .then(function(){
+                    // this.collection = this.loki_db.getCollection('key_chain');
+                    // d.resolve(this);
+                // }.bind(this))
+                // .catch(function(e){
+                    // this.loki_db.addCollection('key_chain');
+                    // this.loki_db.saveDatabase();
+                    // this.collection = this.loki_db.getCollection('key_chain');
+                    // // this.loaded = true;
+                    // d.resolve(this);
+                // }.bind(this));
                 
-                return d.promise;
-        };
+            // return d.promise;
+        // };
         
-        this.reload = function(){
-            var d = $q.defer();
-            this.loaded = false;
-            this.loki_db.loadDatabase({}, function(e){
-                if(e){
-                    d.reject(e);
-                }else{
-                    this.loaded = true;
-                    d.resolve(this);
-                }
-            }.bind(this));
+        // this.reload = function(){
+            // var d = $q.defer();
+            // this.loaded = false;
+            // this.loki_db.loadDatabase({}, function(e){
+                // if(e){
+                    // d.reject(e);
+                // }else{
+                    // this.loaded = true;
+                    // d.resolve(this);
+                // }
+            // }.bind(this));
             
-            return d.pomise;
-        };
+            // return d.pomise;
+        // };
         
         this.get_collection = function(){
-            return this.loki_db.getCollection('key_chain');
+            return this.loki_db.getCollection('chains');
         };
         
         this.is_loaded = function(){
@@ -208,10 +259,10 @@
                     
                     scope.signininfo.key = secret;
                     scope.signininfo.hash = hash;
-                    scope.signininfo.encoded_account_name = CRYPTO_HANDLER.encryptByDES(scope.signininfo.account_name, secret);
-                    scope.signininfo.account_name = CRYPTO_HANDLER.decryptByDES(scope.signininfo.encoded_account_name, secret);
-                    scope.signininfo.encoded_pwd = CRYPTO_HANDLER.encryptByDES(scope.signininfo.pwd, hash);
-                    scope.signininfo.pwd = CRYPTO_HANDLER.decryptByDES(scope.signininfo.encoded_pwd, hash);
+                    scope.signininfo.encoded_account_name = CRYPTO_HANDLER.encrypt_by_DES(scope.signininfo.account_name, secret);
+                    scope.signininfo.account_name = CRYPTO_HANDLER.decrypt_by_DES(scope.signininfo.encoded_account_name, secret);
+                    scope.signininfo.encoded_pwd = CRYPTO_HANDLER.encrypt_by_DES(scope.signininfo.pwd, hash);
+                    scope.signininfo.pwd = CRYPTO_HANDLER.decrypt_by_DES(scope.signininfo.encoded_pwd, hash);
                     
                     console.log(scope.signininfo);
                     scope.$digest();
@@ -246,6 +297,47 @@
                     });
                 }
             };
+    }]);
+    window.chains_app.directive('generateKeysPair', ['$timeout', 'CRYPTO_HANDLER', function($timeout, CRYPTO_HANDLER){
+        return {restrict: 'EA',
+                link: function(scope, el) {
+                    el.bind('click', function(e) {
+                        e.preventDefault();
+                        // keys pair obj
+                        angular.element('div#preloader').css({'display':'block'});
+                        
+                        $timeout(function(){
+                            var keys = CRYPTO_HANDLER.generate_rsa_keys_pair();
+                            scope.ctrl.new_kays_pair.pub_key_base64 = keys.pub_key_base64;
+                            scope.ctrl.new_kays_pair.pri_key_base64 = keys.pri_key_base64;
+                            scope.ctrl.new_kays_pair.pub_key_hex = keys.pub_key_hex;
+                            scope.ctrl.new_kays_pair.pri_key_hex = keys.pri_key_hex;
+                            scope.$digest();
+                            console.log(keys);
+                            angular.element('div#preloader').css({'display':'none'});
+                        }, 1000);
+                        
+                    });
+                }
+            };
+    }]);
+    window.chains_app.directive('saveKeysPair', ['LOKI_STORAGE', function(LOKI_STORAGE){
+        return {
+            restrict: 'AE',
+            link: function(scope, elem){
+                elem.bind('click', function(e){
+                    e.preventDefault();
+                    console.log('Is DB ready: ' + LOKI_STORAGE.is_loaded());
+                    if(!LOKI_STORAGE.is_loaded()){
+                        LOKI_STORAGE.init().then(function(){
+                            console.log('db is ready');
+                        });
+                    };
+                    var new_keys_pair = {timestamp: Date.now(), keys: scope.ctrl.new_kays_pair};
+                    console.log(new_keys_pair);
+                });
+            }
+        };
     }]);
     // shared scope
     
@@ -347,11 +439,19 @@
     signinController.$injector = ['$state', '$scope', '$stateParams', '$rootScope', 'APP_VALUES', 'UTIL_INDEX'];
 	window.chains_app.controller('signinCtrl', signinController);
     
-    var indexController = function ($state, $scope, $stateParams, $rootScope, APP_VALUES) {
+    var indexController = function ($state, $scope, $stateParams, $rootScope, APP_VALUES, LOKI_STORAGE) {
+        
         // set ctrl
         var ctrl = this;
         ctrl.pwd = 'Hello Chains';
         ctrl.checked = false;
+        ctrl.is_db_ready = false;
+        ctrl.new_kays_pair = {pub_key_base64: null,
+                            pri_key_base64: null,
+                            pub_key_hex: null,
+                            pri_key_hex: null};
+        
+        console.log(LOKI_STORAGE.get_collection());
         
         ctrl.toggle_checked = function(){
             ctrl.checked = !ctrl.checked;
@@ -375,7 +475,7 @@
                             'ZLOAIPQ0E481SVSJUOEFW719H74H'];
                             
 	}
-	indexController.$injector = ['$state', '$scope', '$stateParams', '$rootScope', 'APP_VALUES'];
+	indexController.$injector = ['$state', '$scope', '$stateParams', '$rootScope', 'APP_VALUES', 'LOKI_STORAGE'];
 	window.chains_app.controller('indexCtrl', indexController);
     
     var frontController = function ($state, $scope, $stateParams, $rootScope, APP_VALUES) {
